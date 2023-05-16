@@ -1,6 +1,8 @@
 ﻿using Business.Abstract;
 using Core.Entity.Concrete;
 using Core.Utilities.Results.Abstract;
+using Core.Utilities.Security;
+using Core.Utilities.Security.Abstract;
 using Core.Utilities.Security.Hashing;
 using DataAccess.Abstract;
 using Entity.Concrete.Dtos.AuthDtos.AuthLoginDtos;
@@ -16,9 +18,13 @@ namespace Business.Concrete
     public class AuthManager : IAuthService
     {
         private IUserDal _userDal;
-        public AuthManager(IUserDal userDal)
+        private ITokenHelper _tokenHelper;
+        private IUserOperationClaimDal _userOperationClaimDal;
+        public AuthManager(IUserDal userDal, IUserOperationClaimDal userOperationClaimDal, ITokenHelper tokenHelper)
         {
             _userDal = userDal;
+            _userOperationClaimDal = userOperationClaimDal;
+            _tokenHelper = tokenHelper;
         }
         public async Task<IDataResult<AccessToken>> Login(LoginRequestDto loginRequestDto)
         {
@@ -28,9 +34,19 @@ namespace Business.Concrete
                 if (userResult.Data != null)
                 {
                     bool verfyPasswordHash = HashinHelper.VerfyPasswordHash(loginRequestDto.Password, userResult.Data.PasswordSalt, userResult.Data.PasswordSalt);
-                    if(verfyPasswordHash)
+                    if (verfyPasswordHash)
                     {
-                        ///Token dön
+                        var user = userResult.Data;
+                        var operationClaimDataResult = await _userOperationClaimDal.GetOperationClaimByUserId(user.Id);
+                        if (operationClaimDataResult.Success)
+                        {
+                            if (operationClaimDataResult.Data != null)
+                            {
+                                var operationClaims = operationClaimDataResult.Data;
+                               return await _tokenHelper.CreateAccessToken(user, operationClaims);
+                            }
+                        }
+
                     }
                 }
             }

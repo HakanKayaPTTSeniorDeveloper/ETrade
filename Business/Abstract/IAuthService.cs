@@ -1,4 +1,5 @@
 ﻿using Core.Utilities.Results.Abstract;
+using Core.Utilities.Security;
 using Entity.Concrete.Dtos.AuthDtos.AuthLoginDtos;
 using System;
 using System.Collections.Generic;

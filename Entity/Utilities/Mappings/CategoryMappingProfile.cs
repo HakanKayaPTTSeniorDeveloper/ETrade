@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entity.Utilities.Mappings.CategoryMappingProfile
+namespace Entity.Utilities.Mappings
 {
-    public class CategoryMappingProfile:Profile
+    public class CategoryMappingProfile : Profile
     {
         public CategoryMappingProfile()
         {
