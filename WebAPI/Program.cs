@@ -1,4 +1,4 @@
-using Entity.Utilities.Mappings.CategoryMappingProfile;
+using Entity.Utilities.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
