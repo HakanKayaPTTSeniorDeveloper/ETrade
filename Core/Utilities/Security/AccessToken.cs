@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace Core.Utilities.Security
 {
-    internal class AccessToken
+    public class AccessToken
     {
+        public string Token { get; set; }
+        public DateTime AccessTokenExpration { get; set; }
     }
 }

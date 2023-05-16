@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entity.Concrete.Entities
+namespace Entity.Concrete.Dtos.ProductDtos.ProductGetAllDtos
 {
-    public class Product:IEntity
+    public class ProductGetAllResponseDto : IDto
     {
         public int Id { get; set; }
         public short CategoryId { get; set; }
@@ -18,10 +18,3 @@ namespace Entity.Concrete.Entities
         public bool IsActive { get; set; }
     }
 }
-
-
-
-
-
-
-

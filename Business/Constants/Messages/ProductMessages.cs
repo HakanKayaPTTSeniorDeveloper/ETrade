@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Business.Constants.Messages
 {
-    internal class ProductMessages
+    public static class ProductMessage
     {
+        public static string Added = "Ürün eklendi";
+        public static string Updated = "Ürün güncellendi";
+        public static string Deleted = "Ürün silindi";
+
     }
 }

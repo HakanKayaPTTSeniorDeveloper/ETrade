@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace Core.Utilities.Security
 {
-    internal class TokenOptions
+    public class TokenOptions
     {
+        public string Audience { get; set; }
+        public string Issuer { get; set; }
+        public int AccessTokenExpration { get; set; }
+        public string SecurityKey { get; set; }
     }
 }

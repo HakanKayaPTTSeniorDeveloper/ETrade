@@ -5,12 +5,6 @@ using Entity.Concrete.Dtos.CategoryDtos.CategoryGetAllDtos;
 using Entity.Concrete.Dtos.CategoryDtos.CategoryGetByIdDtos;
 using Entity.Concrete.Dtos.CategoryDtos.CategoryGetByNameDtos;
 using Entity.Concrete.Dtos.CategoryDtos.CategoryUpdateDtos;
-using Entity.Concrete.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Abstract
 {
@@ -22,5 +16,6 @@ namespace Business.Abstract
         Task<IDataResult<CategoryGetByIdResponseDto>> GetById(int id);
         Task<IDataResult<CategoryGetByNameResponseDto>> GetByName(string categoryName);
         Task<IDataResult<List<CategoryGetAllResponseDto>>> GetAll();
+
     }
 }
