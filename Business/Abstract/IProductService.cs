@@ -8,10 +8,10 @@ namespace Business.Abstract
 {
     public interface IProductService
     {
-        Task<IResult> Add(ProductAddRequestDto productAddRequestDto);
-        Task<IResult> Update(ProductUpdateRequestDto productUpdateRequestDto);
-        Task<IResult> Delete(int id);
         Task<IDataResult<ProductGetByIdResponseDto>> GetById(int id);
         Task<IDataResult<List<ProductGetAllResponseDto>>> GetAll();
+        Task<IResult> Add(ProductAddRequestDto ProductAddRequestDto);
+        Task<IResult> Update(ProductUpdateRequestDto ProductUpdateRequestDto);
+        Task<IResult> Delete(int id);
     }
 }

@@ -5,10 +5,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Core.Entity.Concrete;
+using Core.Entities.Concrete.Entities;
 using Core.Extensions;
-using Core.Utilities.Results.Abstract;
-using Core.Utilities.Results.Concrete;
 using Core.Utilities.Security.Abstract;
 using Core.Utilities.Security.Encryption;
 using Microsoft.Extensions.Configuration;
@@ -18,15 +16,15 @@ namespace Core.Utilities.Security.Concrete.Jwt
 {
     public class JwtHelper : ITokenHelper
     {
-        private IConfiguration _configuration;
-        private TokenOptions _tokenOptions;
-        private DateTime _accessTokenExpiration;
+        IConfiguration _configuration;
+        TokenOptions _tokenOptions;
+        DateTime _accessTokenExpiration;
         public JwtHelper(IConfiguration configuration)
         {
             _configuration = configuration;
             _tokenOptions = _configuration.GetSection("TokenOptions").Get<TokenOptions>();
         }
-        public async Task<IDataResult<AccessToken>> CreateAccessToken(User user, List<OperationClaim> operationClaims)
+        public AccessToken CreateToken(User user, List<OperationClaim> operationClaims)
         {
             _accessTokenExpiration = DateTime.Now.AddMinutes(_tokenOptions.AccessTokenExpration);
             var securityKey = SecurityKeyHelper.CreateSecurityKey(_tokenOptions.SecurityKey);
@@ -35,12 +33,11 @@ namespace Core.Utilities.Security.Concrete.Jwt
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             var token = jwtSecurityTokenHandler.WriteToken(jwtSecurityToken);
 
-            var accessToken=  new AccessToken
+            return new AccessToken
             {
                 Token = token,
-                AccessTokenExpration = _accessTokenExpiration
+                TokenExpiration = _accessTokenExpiration
             };
-            return new SuccessDataResult<AccessToken>(accessToken);
 
         }
         public JwtSecurityToken CreateJwtSecurityToken(TokenOptions tokenOptions, User user, SigningCredentials signingCredentials, List<OperationClaim> operationClaims)

@@ -1,21 +1,18 @@
 ﻿using AutoMapper;
 using Business.Abstract;
+using Business.BusinessAspect.Autofac;
 using Business.Constants.Messages;
+using Business.ValidationRules.FluentValidation.CategoryValidators;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entity.Concrete.Dtos.CategoryDtos.CatagoryAddDtos;
-using Entity.Concrete.Dtos.CategoryDtos.CategoryDeleteDtos;
 using Entity.Concrete.Dtos.CategoryDtos.CategoryGetAllDtos;
 using Entity.Concrete.Dtos.CategoryDtos.CategoryGetByIdDtos;
-using Entity.Concrete.Dtos.CategoryDtos.CategoryGetByNameDtos;
 using Entity.Concrete.Dtos.CategoryDtos.CategoryUpdateDtos;
 using Entity.Concrete.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
@@ -28,65 +25,81 @@ namespace Business.Concrete
             _categoryDal = categoryDal;
             _mapper = mapper;
         }
-        public async Task<IResult> Add(CategoryAddRequestDto categoryAddRequestDto)
+
+        [SecurityAspect("Category.Add", Priority = 2)]
+        [ValidationAspect(typeof(CategoryAddRequestDtoValidator), Priority = 3)]
+        [CacheRemoveAspect("ICategoryService.Get", Priority = 4)]
+        public async Task<IResult> Add(CategoryAddRequestDto CategoryAddRequestDto)
         {
-            var category = _mapper.Map<Category>(categoryAddRequestDto);
-            return await _categoryDal.Add(category);
+            var category = _mapper.Map<Category>(CategoryAddRequestDto);
+            await _categoryDal.Add(category);
+            return new SuccessResult(CategoryMessages.Added);
         }
 
-        public async Task<IResult> Delete(CategoryDeleteRequestDto categoryDeleteRequestDto)
+        [SecurityAspect("Category.Delete", Priority = 2)]
+        [CacheRemoveAspect("ICategoryService.Get", Priority = 3)]
+        public async Task<IResult> Delete(int id)
         {
-            var category = _mapper.Map<Category>(categoryDeleteRequestDto);
-            return await _categoryDal.Delete(category);
-
-        }
-        public async Task<IDataResult<List<CategoryGetAllResponseDto>>> GetAll()
-        {
-            var categoriesResult = await _categoryDal.GetList();
-
-            if (categoriesResult.Success)
+            var category = await _categoryDal.Get(x => x.Id == id && x.IsActive == true);
+            if (category != null)
             {
-                if (categoriesResult.Data != null)
-                {
-                    var categoryGetAllResponseDtos = _mapper.Map<List<CategoryGetAllResponseDto>>(categoriesResult.Data);
-                    return new SuccessDataResult<List<CategoryGetAllResponseDto>>(categoryGetAllResponseDtos);
-                }
+                category.IsActive = false;
+                await _categoryDal.Update(category);
+                return new SuccessResult(CategoryMessages.Deleted);
+
             }
-            return new ErrorDataResult<List<CategoryGetAllResponseDto>>(null);
+
+            return new ErrorResult(CategoryMessages.OperationFailed);
         }
 
+        [SecurityAspect("Category.GetById", Priority = 2)]
         public async Task<IDataResult<CategoryGetByIdResponseDto>> GetById(int id)
         {
-            var categoryDataResult = await _categoryDal.Get(x => x.Id == id);
-
-            if (categoryDataResult.Success)
-            {
-                if (categoryDataResult.Data != null)
-                {
-                    var categoryGetByIdResponseDto = _mapper.Map<CategoryGetByIdResponseDto>(categoryDataResult.Data);
-                    return new SuccessDataResult<CategoryGetByIdResponseDto>(categoryGetByIdResponseDto);
-                }
-            }
-            return new ErrorDataResult<CategoryGetByIdResponseDto>(null);
+            var category = await _categoryDal.Get(x => x.Id == id && x.IsActive == true);
+            var categoryGetByIdResponseDto = _mapper.Map<CategoryGetByIdResponseDto>(category);
+            return new SuccessDataResult<CategoryGetByIdResponseDto>(categoryGetByIdResponseDto);
         }
 
-        public async Task<IDataResult<CategoryGetByNameResponseDto>> GetByName(string categoryName)
+        [SecurityAspect("Category.GetList", Priority = 2)]
+        [CacheAspect(Priority = 3)]
+        public async Task<IDataResult<List<CategoryGetAllResponseDto>>> GetAll()
         {
-            var categoryDataResult = await _categoryDal.Get(x => x.Name == categoryName);
-            if (categoryDataResult.Success)
-            {
-                if (categoryDataResult.Data != null)
-                {
-                    var categoryGetByNameResponseDto = _mapper.Map<CategoryGetByNameResponseDto>(categoryDataResult.Data);
-                    return new SuccessDataResult<CategoryGetByNameResponseDto>(categoryGetByNameResponseDto);
-                }
-            }
-            return new ErrorDataResult<CategoryGetByNameResponseDto>(null);
+            var categorys = await _categoryDal.GetList(x => x.IsActive == true);
+            var categoryGetAllResponseDtos = _mapper.Map<List<CategoryGetAllResponseDto>>(categorys);
+            categoryGetAllResponseDtos = categoryGetAllResponseDtos.OrderBy(x => x.Name).ToList();
+            return new SuccessDataResult<List<CategoryGetAllResponseDto>>(categoryGetAllResponseDtos);
         }
+
+        [SecurityAspect("Category.Update", Priority = 2)]
+        [ValidationAspect(typeof(CategoryUpdateRequestDtoValidator), Priority = 3)]
+        [CacheRemoveAspect("ICategoryService.Get", Priority = 4)]
         public async Task<IResult> Update(CategoryUpdateRequestDto categoryUpdateRequestDto)
         {
             var category = _mapper.Map<Category>(categoryUpdateRequestDto);
-            return await _categoryDal.Update(category);
+            if (category != null)
+            {
+                await _categoryDal.Update(category);
+                return new SuccessResult(CategoryMessages.Updated);
+            }
+
+            return new ErrorResult(CategoryMessages.OperationFailed);
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }

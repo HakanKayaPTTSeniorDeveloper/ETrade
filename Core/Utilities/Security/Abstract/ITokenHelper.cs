@@ -1,5 +1,4 @@
-﻿using Core.Entity.Concrete;
-using Core.Utilities.Results.Abstract;
+﻿using Core.Entities.Concrete.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +9,6 @@ namespace Core.Utilities.Security.Abstract
 {
     public interface ITokenHelper
     {
-       Task<IDataResult< AccessToken>> CreateAccessToken(User user, List<OperationClaim> operationClaims);
+        AccessToken CreateToken(User user, List<OperationClaim> operationClaims);
     }
 }

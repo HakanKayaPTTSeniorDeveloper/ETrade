@@ -9,6 +9,6 @@ namespace Core.Utilities.Security
     public class AccessToken
     {
         public string Token { get; set; }
-        public DateTime AccessTokenExpration { get; set; }
+        public DateTime TokenExpiration { get; set; }
     }
 }
