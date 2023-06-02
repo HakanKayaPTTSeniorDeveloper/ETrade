@@ -4,7 +4,9 @@ using Business.BusinessAspect.Autofac;
 using Business.Constants.Messages;
 using Business.ValidationRules.FluentValidation.CategoryValidators;
 using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Logging;
 using Core.Aspects.Autofac.Validation;
+using Core.CrossCuttingConcerns.Logging.Log4Net.Loggers;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -16,6 +18,7 @@ using Entity.Concrete.Entities;
 
 namespace Business.Concrete
 {
+    [LogAspect(typeof(DatabaseLogger), Priority = 2)]
     public class CategoryManager : ICategoryService
     {
         private ICategoryDal _categoryDal;
