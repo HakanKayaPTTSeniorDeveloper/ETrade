@@ -68,6 +68,8 @@ builder.Services.AddAutoMapper(typeof(AuthMappingProfile));
 builder.Services.AddAutoMapper(typeof(OperationClaimMappingProfile));
 builder.Services.AddAutoMapper(typeof(UserOperationClaimMappingProfile));
 builder.Services.AddAutoMapper(typeof(UserMappingProfile));
+builder.Services.AddAutoMapper(typeof(CategoryMappingProfile));
+builder.Services.AddAutoMapper(typeof(ProductMappingProfile));
 
 builder.Services.AddControllersWithViews();
 
